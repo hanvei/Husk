@@ -16,25 +16,25 @@ enum WhatsNew {
     static let version = "1.0.1"
     static let items: [Item] = [
         Item(symbol: "bag.fill", title: "Google Play",
-             detail: "Get games from the Store tab. Play Store downloads, with their split APKs and asset packs, run in the Translation Layer."),
-        Item(symbol: "checkmark.seal.fill", title: "Google Play services",
-             detail: "Games see Play services as present and signed out, so they stop asking for it and carry on."),
-        Item(symbol: "arrow.up.doc.fill", title: "Save backups",
-             detail: "Back up a game's saves to a .zip from its page, and restore them later or on another device."),
-        Item(symbol: "exclamationmark.bubble.fill", title: "Crash reports",
-             detail: "When a game takes Husk down, the next launch says what happened and gives you a report to share."),
-        Item(symbol: "checkmark.circle.fill", title: "Know what works",
-             detail: "The library marks each game with how it did last time: it plays, it crashed, or it did not start."),
-        Item(symbol: "gamecontroller.fill", title: "Godot games",
-             detail: "Games made with Godot 3 and 4 now run in the Translation Layer."),
-        Item(symbol: "slider.horizontal.below.square.and.square.filled", title: "Your own controls",
-             detail: "Move, resize and hide the on-screen controller's buttons, for each game."),
-        Item(symbol: "keyboard.fill", title: "Typing in Minecraft",
-             detail: "Chat, sign and world-name fields bring up the keyboard."),
-        Item(symbol: "arrow.left.arrow.right", title: "Switching games",
-             detail: "Close Husk to play another game, and it starts by itself when Husk opens."),
+             detail: HuskL10n.render("Get games from the Store tab. Play Store downloads, with their split APKs and asset packs, run in the Translation Layer.")),
+        Item(symbol: "checkmark.seal.fill", title: HuskL10n.render("Google Play services"),
+             detail: HuskL10n.render("Games see Play services as present and signed out, so they stop asking for it and carry on.")),
+        Item(symbol: "arrow.up.doc.fill", title: HuskL10n.render("Save backups"),
+             detail: HuskL10n.render("Back up a game's saves to a .zip from its page, and restore them later or on another device.")),
+        Item(symbol: "exclamationmark.bubble.fill", title: HuskL10n.render("Crash reports"),
+             detail: HuskL10n.render("When a game takes Husk down, the next launch says what happened and gives you a report to share.")),
+        Item(symbol: "checkmark.circle.fill", title: HuskL10n.render("Know what works"),
+             detail: HuskL10n.render("The library marks each game with how it did last time: it plays, it crashed, or it did not start.")),
+        Item(symbol: "gamecontroller.fill", title: HuskL10n.render("Godot games"),
+             detail: HuskL10n.render("Games made with Godot 3 and 4 now run in the Translation Layer.")),
+        Item(symbol: "slider.horizontal.below.square.and.square.filled", title: HuskL10n.render("Your own controls"),
+             detail: HuskL10n.render("Move, resize and hide the on-screen controller's buttons, for each game.")),
+        Item(symbol: "keyboard.fill", title: HuskL10n.render("Typing in Minecraft"),
+             detail: HuskL10n.render("Chat, sign and world-name fields bring up the keyboard.")),
+        Item(symbol: "arrow.left.arrow.right", title: HuskL10n.render("Switching games"),
+             detail: HuskL10n.render("Close Husk to play another game, and it starts by itself when Husk opens.")),
         Item(symbol: "puzzlepiece.extension.fill", title: "Geode",
-             detail: "Mods for Geometry Dash, Geode 5 included, turned on from the game's settings."),
+             detail: HuskL10n.render("Mods for Geometry Dash, Geode 5 included, turned on from the game's settings.")),
     ]
 
     private static let seenKey = "husk.whatsNew.seen"
@@ -58,8 +58,8 @@ struct WhatsNewSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 26) {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("What's New in Husk \(WhatsNew.version)").font(.largeTitle.weight(.bold))
-                        Text("The first full release.").foregroundStyle(.secondary)
+                        Text(HuskL10n.render("What's New in Husk \(WhatsNew.version)")).font(.largeTitle.weight(.bold))
+                        Text(HuskL10n.render("The first full release.")).foregroundStyle(.secondary)
                     }
                     .padding(.top, 36)
                     ForEach(WhatsNew.items) { item in
@@ -80,7 +80,7 @@ struct WhatsNewSheet: View {
                 .padding(.bottom, 20)
             }
             Button(action: done) {
-                Text("Continue").font(.headline).frame(maxWidth: .infinity).padding(.vertical, 8)
+                Text(HuskL10n.render("Continue")).font(.headline).frame(maxWidth: .infinity).padding(.vertical, 8)
             }
             .buttonStyle(.borderedProminent)
             .padding(.horizontal, 28)

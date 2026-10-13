@@ -46,10 +46,10 @@ final class CompatibilityStore: ObservableObject {
         case works, opens, broken, protected
         var label: String {
             switch self {
-            case .works: return "Works"
-            case .opens: return "Opens"
-            case .broken: return "Doesn\u{2019}t Work"
-            case .protected: return "Protected"
+            case .works: return HuskL10n.render("Works")
+            case .opens: return HuskL10n.render("Opens")
+            case .broken: return HuskL10n.render("Doesn’t Work")
+            case .protected: return HuskL10n.render("Protected")
             }
         }
         var symbol: String {
@@ -70,10 +70,10 @@ final class CompatibilityStore: ObservableObject {
         }
         var explanation: String {
             switch self {
-            case .works: return "Runs and plays or works normally."
-            case .opens: return "Starts and shows its screens, but has not been fully tested or has problems."
-            case .broken: return "Crashes or closes while starting."
-            case .protected: return "Refuses to run outside a real Android phone (anti-cheat, anti-tamper or DRM). Husk does not get around that."
+            case .works: return HuskL10n.render("Runs and plays or works normally.")
+            case .opens: return HuskL10n.render("Starts and shows its screens, but has not been fully tested or has problems.")
+            case .broken: return HuskL10n.render("Crashes or closes while starting.")
+            case .protected: return HuskL10n.render("Refuses to run outside a real Android phone (anti-cheat, anti-tamper or DRM). Husk does not get around that.")
             }
         }
     }
@@ -177,7 +177,7 @@ final class CompatibilityStore: ObservableObject {
         }
         guard (200..<300).contains(http.statusCode) else {
             let message = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["error"] as? String
-            throw NSError(domain: "Compatibility", code: 1, userInfo: [NSLocalizedDescriptionKey: message ?? "The compatibility list could not be reached."])
+            throw NSError(domain: "Compatibility", code: 1, userInfo: [NSLocalizedDescriptionKey: message ?? HuskL10n.render("The compatibility list could not be reached.")])
         }
         HuskLog.log("compat", "reported \(package): \(status.rawValue)")
         markAsked(package)
@@ -229,18 +229,18 @@ struct CompatibilitySection: View {
                 }
                 .padding(.vertical, 2)
                 if entry.community.reports > 0 {
-                    LabeledContent("Player Reports", value: "\(entry.community.reports)")
+                    LabeledContent(HuskL10n.render("Player Reports"), value: "\(entry.community.reports)")
                 }
             } else {
-                Text("Not on the list yet. Be the first to say how it runs.")
+                Text(HuskL10n.render("Not on the list yet. Be the first to say how it runs."))
                     .font(.footnote).foregroundStyle(.secondary)
             }
-            Button { reporting = subject } label: { Label("Report How It Ran", systemImage: "square.and.pencil") }
-            Link(destination: compat.pageURL(subject.package)) { Label("Open on antiweb.lol", systemImage: "safari") }
+            Button { reporting = subject } label: { Label(HuskL10n.render("Report How It Ran"), systemImage: "square.and.pencil") }
+            Link(destination: compat.pageURL(subject.package)) { Label(HuskL10n.render("Open on antiweb.lol"), systemImage: "safari") }
         } header: {
-            Text("Compatibility")
+            Text(HuskL10n.render("Compatibility"))
         } footer: {
-            if entry?.official != nil { Text("Tested by the Husk team on an iPhone.") }
+            if entry?.official != nil { Text(HuskL10n.render("Tested by the Husk team on an iPhone.")) }
         }
     }
 }
@@ -271,37 +271,37 @@ struct CompatReportSheet: View {
                         }
                     }
                 } header: {
-                    Text(subject.afterPlaying ? "How did \(subject.name) run?" : "How does \(subject.name) run?")
+                    Text(subject.afterPlaying ? HuskL10n.render("How did \(subject.name) run?") : HuskL10n.render("How does \(subject.name) run?"))
                 }
-                Section("Notes") {
+                Section(HuskL10n.render("Notes")) {
                     TextField("What worked, what didn\u{2019}t, how far you got", text: $notes, axis: .vertical)
                         .lineLimit(3...8)
                 }
                 Section {
-                    TextField("Anonymous", text: $author)
+                    TextField(HuskL10n.render("Anonymous"), text: $author)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 } header: {
-                    Text("Your Name")
+                    Text(HuskL10n.render("Your Name"))
                 } footer: {
-                    Text("Sent with it: \(CompatibilityStore.device), iOS \(UIDevice.current.systemVersion), Husk build \(CompatibilityStore.build), JIT from \(CompatibilityStore.jitMethod). It shows on antiweb.lol for everyone.")
+                    Text(HuskL10n.render("Sent with it: \(CompatibilityStore.device), iOS \(UIDevice.current.systemVersion), Husk build \(CompatibilityStore.build), JIT from \(CompatibilityStore.jitMethod). It shows on antiweb.lol for everyone."))
                 }
                 if let error {
-                    Section { Text(error).foregroundStyle(.red) }
+                    Section { Text(HuskL10n.text(error)).foregroundStyle(.red) }
                 }
             }
             .navigationTitle(sent ? "Thanks!" : "Report")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(subject.afterPlaying ? "Not Now" : "Cancel") {
+                    Button(subject.afterPlaying ? HuskL10n.render("Not Now") : HuskL10n.render("Cancel")) {
                         if subject.afterPlaying { CompatibilityStore.shared.markAsked(subject.package) }
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     if sending { ProgressView() } else {
-                        Button("Send") { send() }.disabled(status == nil)
+                        Button(HuskL10n.render("Send")) { send() }.disabled(status == nil)
                     }
                 }
             }

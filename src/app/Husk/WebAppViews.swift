@@ -34,7 +34,7 @@ final class WebAppHostView: UIView {
         addGestureRecognizer(edge)
     }
 
-    required init?(coder: NSCoder) { fatalError("not used") }
+    required init?(coder: NSCoder) { fatalError(HuskL10n.render("not used")) }
 
     @objc private func edgeSwiped(_ g: UIScreenEdgePanGestureRecognizer) {
         if g.state == .ended, g.translation(in: self).x > 60 { runtime?.back() }
@@ -66,9 +66,9 @@ struct WebAppScreenView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Button { dismiss() } label: { Label("Close", systemImage: "xmark").font(.system(size: 13, weight: .semibold)) }
+                Button { dismiss() } label: { Label(HuskL10n.render("Close"), systemImage: "xmark").font(.system(size: 13, weight: .semibold)) }
                 Button { WebAppRuntime.runtime(for: app)?.back() } label: {
-                    Label("Back", systemImage: "chevron.backward").font(.system(size: 13, weight: .semibold))
+                    Label(HuskL10n.render("Back"), systemImage: "chevron.backward").font(.system(size: 13, weight: .semibold))
                 }
                 Spacer()
                 Text(app.label).font(.system(size: 12, weight: .medium)).foregroundStyle(.secondary).lineLimit(1)

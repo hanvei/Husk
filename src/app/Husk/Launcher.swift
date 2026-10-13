@@ -86,8 +86,8 @@ enum LibraryItem: Identifiable, Hashable {
         guard let date = lastUsed else { return nil }
         let rel = RelativeDateTimeFormatter()
         rel.unitsStyle = .full
-        let ago = date.timeIntervalSinceNow > -60 ? "just now" : rel.localizedString(for: date, relativeTo: Date())
-        return (isGame ? "Played " : "Opened ") + ago
+        let ago = date.timeIntervalSinceNow > -60 ? HuskL10n.render("just now") : rel.localizedString(for: date, relativeTo: Date())
+        return isGame ? HuskL10n.render("Played \(ago)") : HuskL10n.render("Opened \(ago)")
     }
 }
 
@@ -97,9 +97,9 @@ enum LibraryFilter: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .all: return "All"
-        case .games: return "Games"
-        case .apps: return "Apps"
+        case .all: return HuskL10n.render("All")
+        case .games: return HuskL10n.render("Games")
+        case .apps: return HuskL10n.render("Apps")
         }
     }
 }
@@ -157,7 +157,7 @@ struct HomeView: View {
                         if holiday { ChristmasTree(size: 30).padding(.leading, 2) }
                         Spacer()
                         HeaderButton(systemImage: "plus") { router.addSomething() }
-                            .accessibilityLabel("Add a Game or App")
+                            .accessibilityLabel(HuskL10n.render("Add a Game or App"))
                     }
                     .padding(.horizontal, 4)
                     .padding(.bottom, 6)
@@ -177,13 +177,13 @@ struct HomeView: View {
                         AndroidTile()
                     }
                     if let error = jit.error, !Launcher.jitOn {
-                        Text(error).font(.caption).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
+                        Text(HuskL10n.text(error)).font(.caption).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
                             .padding(.horizontal, 4)
                     }
 
                     let rest = items.filter { $0 != lead }
                     if !rest.isEmpty {
-                        ShelfHeader(title: "Library") { router.showLibrary(.all) }
+                        ShelfHeader(title: HuskL10n.render("Library")) { router.showLibrary(.all) }
                             .padding(.horizontal, 4)
                             .padding(.top, 6)
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4), spacing: 10) {
@@ -313,7 +313,7 @@ private struct JITTile: View {
                         if jit.busy { ProgressView() }
                     }
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(isOn ? "JIT on" : "JIT off").font(.headline).foregroundStyle(.primary)
+                        Text(isOn ? HuskL10n.render("JIT on") : HuskL10n.render("JIT off")).font(.headline).foregroundStyle(.primary)
                         Text(isOn ? "via \(via)" : jit.busy ? (jit.status ?? "Turning on…") : "Tap to turn on")
                             .font(.footnote).foregroundStyle(.secondary).lineLimit(1)
                     }
@@ -348,7 +348,7 @@ private struct DownloadsTile: View {
         }
         if downloads.jobs.contains(where: \.failed) { return "Something failed" }
         if let release = updates.available { return "Husk \(release.version) is out" }
-        if guest.update.isSomething { return "Android update ready" }
+        if guest.update.isSomething { return HuskL10n.render("Android update ready") }
         return "Up to date"
     }
 
@@ -358,8 +358,8 @@ private struct DownloadsTile: View {
                 VStack(alignment: .leading, spacing: 18) {
                     TileGlyph(systemImage: "arrow.down", color: .indigo)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Downloads").font(.headline).foregroundStyle(.primary)
-                        Text(status).font(.footnote).foregroundStyle(.secondary).lineLimit(1)
+                        Text(HuskL10n.render("Downloads")).font(.headline).foregroundStyle(.primary)
+                        Text(HuskL10n.text(status)).font(.footnote).foregroundStyle(.secondary).lineLimit(1)
                     }
                 }
             }
@@ -380,7 +380,7 @@ private struct AndroidTile: View {
                         TileGlyph(systemImage: "apps.iphone", color: AndroidMark.green, size: 40)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Android").font(.headline).foregroundStyle(.primary)
-                            Text("For apps the translation layer can't run yet")
+                            Text(HuskL10n.render("For apps the translation layer can't run yet"))
                                 .font(.footnote).foregroundStyle(.secondary)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
@@ -392,7 +392,7 @@ private struct AndroidTile: View {
                 Button {
                     if router.androidStarted { router.openGuest() } else { router.startAndroid() }
                 } label: {
-                    Text(router.androidStarted ? "Open" : "Start")
+                    Text(router.androidStarted ? HuskL10n.render("Open") : "Start")
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(.primary)
                         .padding(.horizontal, 14)
@@ -432,16 +432,15 @@ private struct WelcomeCard: View {
                 .frame(width: 60, height: 60)
                 .background(Color.accentColor.opacity(0.15), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             VStack(alignment: .leading, spacing: 6) {
-                Text("Add your first game")
+                Text(HuskL10n.render("Add your first game"))
                     .font(.system(.title2, design: .rounded).weight(.bold))
-                Text("Pick an APK or a bundle (.xapk, .apkm, .apks), or share one to Husk from Files or Safari. Games run "
-                   + "straight on your iPhone. Other apps run inside Android.")
+                Text(HuskL10n.render("Pick an APK or a bundle (.xapk, .apkm, .apks), or share one to Husk from Files or Safari. Games run straight on your iPhone. Other apps run inside Android."))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Button { router.addSomething() } label: {
-                Text("Add a Game or App").frame(maxWidth: .infinity)
+                Text(HuskL10n.render("Add a Game or App")).frame(maxWidth: .infinity)
             }
             .buttonStyle(PrimaryButtonStyle())
         }
@@ -458,7 +457,7 @@ private struct ShelfHeader: View {
         HStack(alignment: .firstTextBaseline) {
             Text(title).font(.system(.title3, design: .rounded).weight(.bold))
             Spacer()
-            Button("See All", action: seeAll).font(.subheadline.weight(.semibold))
+            Button(HuskL10n.render("See All"), action: seeAll).font(.subheadline.weight(.semibold))
         }
         .padding(.bottom, -10)
     }
@@ -568,16 +567,16 @@ struct LibraryScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     HStack {
-                        Text("Library")
+                        Text(HuskL10n.render("Library"))
                             .font(.system(size: 28, weight: .heavy, design: .rounded))
                         Spacer()
                         HeaderButton(systemImage: "plus") { router.addSomething() }
-                            .accessibilityLabel("Add a Game or App")
+                            .accessibilityLabel(HuskL10n.render("Add a Game or App"))
                     }
                     .padding(.horizontal, 4)
                     .padding(.bottom, 6)
-                    SearchField(text: $query, prompt: "Search games and apps")
-                    Picker("Show", selection: $router.libraryFilter) {
+                    SearchField(text: $query, prompt: HuskL10n.render("Search games and apps"))
+                    Picker(HuskL10n.render("Show"), selection: $router.libraryFilter) {
                         ForEach(LibraryFilter.allCases) { Text($0.title).tag($0) }
                     }
                     .pickerStyle(.segmented)
@@ -592,10 +591,10 @@ struct LibraryScreen: View {
                     let apps = (matches(query, "Android") ? [LibraryItem.android] : []) + items.filter { !$0.isGame }
 
                     if router.libraryFilter != .apps {
-                        section("Games", games, empty: query.isEmpty ? "Add a game with the + button." : nil)
+                        section(HuskL10n.render("Games"), games, empty: query.isEmpty ? HuskL10n.render("Add a game with the + button.") : nil)
                     }
                     if router.libraryFilter != .games {
-                        section("Apps", apps, empty: nil)
+                        section(HuskL10n.render("Apps"), apps, empty: nil)
                     }
                     if !query.isEmpty, games.isEmpty, apps.isEmpty { NoResults(query: query) }
                 }
@@ -645,7 +644,7 @@ struct LibraryScreen: View {
             if g.packageName == GeodeSupport.launcherPackage { return "Geode" }
             return g.report?.canRun == true ? nil : "May not run"
         case .android:
-            if AndroidHost.shared.isReady { return "Running" }
+            if AndroidHost.shared.isReady { return HuskL10n.render("Running") }
             return guest.state == .ready ? nil : "Not installed"
         case .app: return nil
         }
@@ -753,14 +752,14 @@ struct SearchField: View {
                         Image(systemName: "xmark.circle.fill").foregroundStyle(.tertiary)
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Clear")
+                    .accessibilityLabel(HuskL10n.render("Clear"))
                 }
             }
             .padding(.horizontal, 10)
             .frame(height: 38)
             .background(Color(uiColor: .tertiarySystemFill), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             if focused {
-                Button("Cancel") { text = ""; focused = false }
+                Button(HuskL10n.render("Cancel")) { text = ""; focused = false }
                     .transition(.move(edge: .trailing).combined(with: .opacity))
             }
         }
@@ -774,8 +773,8 @@ struct NoResults: View {
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: "magnifyingglass").font(.system(size: 28, weight: .light)).foregroundStyle(.secondary)
-            Text("No Results").font(.headline)
-            Text("Nothing here is called “\(query)”.").font(.subheadline).foregroundStyle(.secondary)
+            Text(HuskL10n.render("No Results")).font(.headline)
+            Text(HuskL10n.render("Nothing here is called “\(query)”.")).font(.subheadline).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 48)
@@ -819,6 +818,6 @@ private struct LibraryRouteView: View {
 
 private struct GoneView: View {
     var body: some View {
-        Text("This was removed.").foregroundStyle(.secondary).frame(maxWidth: .infinity, maxHeight: .infinity)
+        Text(HuskL10n.render("This was removed.")).foregroundStyle(.secondary).frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

@@ -201,7 +201,7 @@ final class TLUnityUIView: UIView, UIKeyInput {
         onStats?(text)
     }
 
-    required init?(coder: NSCoder) { fatalError("not used") }
+    required init?(coder: NSCoder) { fatalError(HuskL10n.render("not used")) }
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -359,7 +359,7 @@ final class TLUnityUIView: UIView, UIKeyInput {
         typedLabel.autoresizingMask = [.flexibleWidth]
         bar.addSubview(typedLabel)
         let done = UIButton(type: .system)
-        done.setTitle("Done", for: .normal)
+        done.setTitle(HuskL10n.render("Done"), for: .normal)
         done.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
         done.frame = CGRect(x: 100, y: 0, width: 80, height: 44)
         done.autoresizingMask = [.flexibleLeftMargin]
@@ -636,8 +636,8 @@ final class TLUnityModel: ObservableObject {
     var statusText: String {
         switch state {
         case Int32(HUSK_UNITY_STARTING): return "Loading the engine…"
-        case Int32(HUSK_UNITY_RUNNING):  return "Running"
-        case Int32(HUSK_UNITY_FAILED):   return "Could not start — see the log"
+        case Int32(HUSK_UNITY_RUNNING):  return HuskL10n.render("Running")
+        case Int32(HUSK_UNITY_FAILED):   return HuskL10n.render("Could not start — see the log")
         case Int32(HUSK_UNITY_ENDED):    return "The game exited"
         default:                         return "Starting"
         }
@@ -729,9 +729,9 @@ struct TLCocosAttemptView: View {
             Group {
                 if let other = blockedBy {
                     VStack(spacing: 8) {
-                        Text("Another game is already loaded")
+                        Text(HuskL10n.render("Another game is already loaded"))
                             .font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
-                        Text("\(other) was started in this session, and a game cannot be unloaded once it has started. Close Husk completely and open it again to run \(app.label).")
+                        Text(HuskL10n.render("\(other) was started in this session, and a game cannot be unloaded once it has started. Close Husk completely and open it again to run \(app.label)."))
                             .font(.system(size: 13)).foregroundStyle(.white.opacity(0.7))
                             .multilineTextAlignment(.center).frame(maxWidth: 460)
                     }
@@ -772,7 +772,7 @@ struct TLCocosAttemptView: View {
             if hint {
                 VStack {
                     Spacer()
-                    Text("Tap with three fingers to show the interface")
+                    Text(HuskL10n.render("Tap with three fingers to show the interface"))
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 14).padding(.vertical, 8)
@@ -829,18 +829,18 @@ struct TLCocosAttemptView: View {
                     Image(systemName: "plus.magnifyingglass").foregroundStyle(.white.opacity(0.7))
                 }
                 HStack(spacing: 10) {
-                    Button(padLayout[id].hidden ? "Show" : "Hide") { padLayout[id].hidden.toggle(); padLayout.save(app.id) }
-                    Button("Reset") { padLayout[id] = PadLayout.Adjust(); padLayout.save(app.id) }
+                    Button(padLayout[id].hidden ? HuskL10n.render("Show") : HuskL10n.render("Hide")) { padLayout[id].hidden.toggle(); padLayout.save(app.id) }
+                    Button(HuskL10n.render("Reset")) { padLayout[id] = PadLayout.Adjust(); padLayout.save(app.id) }
                 }
                 .buttonStyle(.bordered).tint(.white)
             } else {
-                Text("Drag a control to move it, or tap one to resize or hide it.")
+                Text(HuskL10n.render("Drag a control to move it, or tap one to resize or hide it."))
                     .font(.system(size: 13, weight: .medium)).foregroundStyle(.white)
                     .multilineTextAlignment(.center).frame(maxWidth: 260)
             }
             HStack(spacing: 10) {
-                Button("Reset All", role: .destructive) { padLayout = PadLayout(); padSelected = nil; padLayout.save(app.id) }
-                Button("Done") { editingPad = false; padSelected = nil }.buttonStyle(.borderedProminent)
+                Button(HuskL10n.render("Reset All"), role: .destructive) { padLayout = PadLayout(); padSelected = nil; padLayout.save(app.id) }
+                Button(HuskL10n.render("Done")) { editingPad = false; padSelected = nil }.buttonStyle(.borderedProminent)
             }
             .buttonStyle(.bordered)
         }
@@ -852,12 +852,12 @@ struct TLCocosAttemptView: View {
     private var bar: some View {
         HStack(spacing: 12) {
             Button { dismiss() } label: {
-                Label("Close", systemImage: "xmark").font(.system(size: 13, weight: .semibold))
+                Label(HuskL10n.render("Close"), systemImage: "xmark").font(.system(size: 13, weight: .semibold))
             }
             .tint(.white)
             if engine == .flutter {
                 Button { husk_flutter_back() } label: {
-                    Label("Back", systemImage: "chevron.backward").font(.system(size: 13, weight: .semibold))
+                    Label(HuskL10n.render("Back"), systemImage: "chevron.backward").font(.system(size: 13, weight: .semibold))
                 }
                 .tint(.white)
             }
@@ -871,12 +871,12 @@ struct TLCocosAttemptView: View {
             }
             if padOffered {
                 Button { settings.padShown.toggle(); settings.save(app.id); if !settings.padShown { editingPad = false } } label: {
-                    Label(settings.padShown ? "Hide pad" : "Pad", systemImage: "gamecontroller").font(.system(size: 12, weight: .semibold))
+                    Label(settings.padShown ? HuskL10n.render("Hide pad") : "Pad", systemImage: "gamecontroller").font(.system(size: 12, weight: .semibold))
                 }
                 .tint(.white)
                 if settings.padShown {
                     Button { padSelected = nil; editingPad.toggle() } label: {
-                        Label(editingPad ? "Done" : "Edit pad", systemImage: "slider.horizontal.below.square.and.square.filled")
+                        Label(editingPad ? HuskL10n.render("Done") : HuskL10n.render("Edit pad"), systemImage: "slider.horizontal.below.square.and.square.filled")
                             .font(.system(size: 12, weight: .semibold))
                     }
                     .tint(editingPad ? .yellow : .white)
@@ -887,12 +887,12 @@ struct TLCocosAttemptView: View {
             }
             if devInfo {
                 Button { withAnimation(.snappy(duration: 0.25)) { showLog.toggle() } } label: {
-                    Text(showLog ? "Hide log" : "Log").font(.system(size: 12, weight: .semibold))
+                    Text(showLog ? HuskL10n.render("Hide log") : "Log").font(.system(size: 12, weight: .semibold))
                 }
                 .tint(.white)
             }
             Button { toggleInterface() } label: {
-                Label("Hide", systemImage: "eye.slash").font(.system(size: 12, weight: .semibold))
+                Label(HuskL10n.render("Hide"), systemImage: "eye.slash").font(.system(size: 12, weight: .semibold))
             }
             .tint(.white)
         }
@@ -904,16 +904,16 @@ struct TLCocosAttemptView: View {
     private var logPanel: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("ATTEMPT LOG").font(.technical(10, weight: .bold)).foregroundStyle(Theme.textDim)
+                Text(HuskL10n.render("ATTEMPT LOG")).font(.technical(10, weight: .bold)).foregroundStyle(Theme.textDim)
                 Spacer()
                 Button { UIPasteboard.general.string = model.logText } label: {
-                    Label("Copy", systemImage: "doc.on.doc").font(.system(size: 11))
+                    Label(HuskL10n.render("Copy"), systemImage: "doc.on.doc").font(.system(size: 11))
                 }
             }
             .padding(.horizontal, 10).padding(.vertical, 6)
             ScrollViewReader { proxy in
                 ScrollView {
-                    Text(model.logText.isEmpty ? "Starting…" : model.logText)
+                    Text(model.logText.isEmpty ? HuskL10n.render("Starting…") : model.logText)
                         .font(.technical(10))
                         .foregroundStyle(Theme.text)
                         .frame(maxWidth: .infinity, alignment: .leading)

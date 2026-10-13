@@ -166,7 +166,7 @@ final class MassTest: ObservableObject {
             while !Launcher.jitOn { try? await Task.sleep(nanoseconds: 500_000_000) }
             try? await Task.sleep(nanoseconds: UInt64(Self.settleSeconds * 1e9))
             guard let app = TranslationLayerStore.shared.apps.first(where: { $0.id == appID }) else {
-                record(file: file, app: nil, outcome: "Imported, but not in the library", frames: 0, seconds: 0); return
+                record(file: file, app: nil, outcome: HuskL10n.render("Imported, but not in the library"), frames: 0, seconds: 0); return
             }
             if let d = AppDiagnosis.preflight(app), d.blocksLaunch {
                 record(file: file, app: app, outcome: "Not started: \(d.title)", frames: 0, seconds: 0, diagnosis: d.detail); return
@@ -197,7 +197,7 @@ final class MassTest: ObservableObject {
             if st == Int32(HUSK_UNITY_FAILED) || st == Int32(HUSK_UNITY_ENDED) {
                 try? await Task.sleep(nanoseconds: 2_000_000_000)
                 let f = husk_unity_frames()
-                let outcome = st == Int32(HUSK_UNITY_FAILED) ? "Could not start"
+                let outcome = st == Int32(HUSK_UNITY_FAILED) ? HuskL10n.render("Could not start")
                             : f > 30 ? "Started, then stopped" : "Crashed at start"
                 record(file: file, app: app, outcome: outcome, frames: f, seconds: ran)
                 return
@@ -311,25 +311,25 @@ struct MassTestView: View {
                 if let s = test.state {
                     Text(test.active ? "In progress: \(s.results.count) of \(s.queue.count) done." : "Last test: \(s.results.count) of \(s.queue.count) done.")
                 }
-                if !test.status.isEmpty { Text(test.status).font(.caption).foregroundStyle(.secondary) }
+                if !test.status.isEmpty { Text(HuskL10n.text(test.status)).font(.caption).foregroundStyle(.secondary) }
             } footer: {
                 Text("Each app is played once JIT is on, watched for 15 seconds, and written down; then Husk closes. Open Husk again for the next one. At the end the results file is offered to share.")
             }
             Section {
                 if test.active {
-                    Button("Stop", role: .destructive) { test.stop() }
+                    Button(HuskL10n.render("Stop"), role: .destructive) { test.stop() }
                 } else {
-                    Button("Start Mass Test") { test.start() }.disabled((files ?? []).isEmpty)
+                    Button(HuskL10n.render("Start Mass Test")) { test.start() }.disabled((files ?? []).isEmpty)
                     if !test.failures.isEmpty {
-                        Button("Retest \(test.failures.count) Failures") { test.retestFailures() }
+                        Button(HuskL10n.render("Retest \(test.failures.count) Failures")) { test.retestFailures() }
                     }
                 }
                 if FileManager.default.fileExists(atPath: MassTest.resultsURL.path) {
-                    Button("Share Results") { test.writeReport(); share = true }
+                    Button(HuskL10n.render("Share Results")) { test.writeReport(); share = true }
                 }
             }
         }
-        .navigationTitle("Mass Test")
+        .navigationTitle(HuskL10n.render("Mass Test"))
         .huskForm()
         .sheet(isPresented: $share) { ShareSheet(items: [MassTest.resultsURL]) }
     }

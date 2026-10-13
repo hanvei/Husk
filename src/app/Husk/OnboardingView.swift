@@ -76,7 +76,7 @@ struct OnboardingView: View {
                             onDone()
                         }
                     } label: {
-                        Text(page < pages - 1 ? "Continue" : "Start using Husk")
+                        Text(page < pages - 1 ? HuskL10n.render("Continue") : HuskL10n.render("Start using Husk"))
                     }
                     .buttonStyle(PrimaryButtonStyle())
                     .padding(.horizontal, 28)
@@ -110,10 +110,9 @@ struct OnboardingView: View {
                     .shadow(color: Theme.accent.opacity(0.35), radius: 22, y: 10)
             }
             Text("Husk").font(.system(size: 40, weight: .semibold, design: .rounded))
-            Text("Android apps, on your iPhone.")
+            Text(HuskL10n.render("Android apps, on your iPhone."))
                 .font(.title3).foregroundStyle(.secondary)
-            Text("Husk runs a real Android system and opens APKs inside it. "
-               + "A few questions first — all of them can be changed later in Settings.")
+            Text(HuskL10n.render("Husk runs a real Android system and opens APKs inside it. A few questions first — all of them can be changed later in Settings."))
                 .font(.callout).foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 34).padding(.top, 4)
@@ -124,28 +123,24 @@ struct OnboardingView: View {
     private var choices: some View {
         ScrollView {
             VStack(spacing: 14) {
-                Text("How should Husk behave?")
+                Text(HuskL10n.render("How should Husk behave?"))
                     .font(.title2.weight(.semibold))
                     .padding(.top, 34).padding(.bottom, 6)
 
-                choice(icon: "bolt.fill", title: "Start Android on launch",
-                       detail: "Boots the guest as soon as Husk opens, once JIT is "
-                             + "available. Off means you start it yourself.",
+                choice(icon: "bolt.fill", title: HuskL10n.render("Start Android on launch"),
+                       detail: HuskL10n.render("Boots the guest as soon as Husk opens, once JIT is available. Off means you start it yourself."),
                        isOn: $autoStart)
 
-                choice(icon: "rectangle.landscape.rotate", title: "Landscape screen",
-                       detail: "Gives Android a landscape screen, which games fill "
-                             + "properly. Portrait apps get letterboxed instead.",
+                choice(icon: "rectangle.landscape.rotate", title: HuskL10n.render("Landscape screen"),
+                       detail: HuskL10n.render("Gives Android a landscape screen, which games fill properly. Portrait apps get letterboxed instead."),
                        isOn: $landscape)
 
-                choice(icon: "speaker.wave.2.fill", title: "Sound",
-                       detail: "Adds a sound device. Android cannot be saved while "
-                             + "this is on, so every launch boots from cold.",
+                choice(icon: "speaker.wave.2.fill", title: HuskL10n.render("Sound"),
+                       detail: HuskL10n.render("Adds a sound device. Android cannot be saved while this is on, so every launch boots from cold."),
                        isOn: $sound)
 
-                choice(icon: "externaldrive.badge.checkmark", title: "Save automatically",
-                       detail: "Saves the machine once Android settles, so later "
-                             + "launches restore in seconds instead of booting.",
+                choice(icon: "externaldrive.badge.checkmark", title: HuskL10n.render("Save automatically"),
+                       detail: HuskL10n.render("Saves the machine once Android settles, so later launches restore in seconds instead of booting."),
                        isOn: $autoSave)
             }
             .padding(.horizontal, 20).padding(.bottom, 20)
@@ -175,12 +170,12 @@ struct OnboardingView: View {
 
     /// What the JIT page says is already in place, if anything.
     private var jitState: String? {
-        if JITBootstrap.ready { return "JIT is on." }
-        if jit.method == .stikDebug { return "Husk will use StikDebug." }
-        if jit.method == .trollStore { return "Husk will use TrollStore." }
+        if JITBootstrap.ready { return HuskL10n.render("JIT is on.") }
+        if jit.method == .stikDebug { return HuskL10n.render("Husk will use StikDebug.") }
+        if jit.method == .trollStore { return HuskL10n.render("Husk will use TrollStore.") }
         switch jit.pairingSource {
-        case .onDevice: return "Paired on this device."
-        case .imported: return "Pairing file imported."
+        case .onDevice: return HuskL10n.render("Paired on this device.")
+        case .imported: return HuskL10n.render("Pairing file imported.")
         case nil: return nil
         }
     }
@@ -191,10 +186,8 @@ struct OnboardingView: View {
             Image(systemName: "bolt.fill")
                 .font(.system(size: 54))
                 .foregroundStyle(Theme.accent)
-            Text("Turn on JIT").font(.largeTitle.weight(.semibold))
-            Text("Android and Translation Layer games need JIT, which on iOS only an attached debugger can grant. "
-               + "StikJIT is built into Husk and is the recommended way: it turns JIT on from inside the app, "
-               + "with no computer and no other app. StikDebug and TrollStore work too.")
+            Text(HuskL10n.render("Turn on JIT")).font(.largeTitle.weight(.semibold))
+            Text(HuskL10n.render("Android and Translation Layer games need JIT, which on iOS only an attached debugger can grant. StikJIT is built into Husk and is the recommended way: it turns JIT on from inside the app, with no computer and no other app. StikDebug and TrollStore work too."))
                 .font(.callout).foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 34)
@@ -202,7 +195,7 @@ struct OnboardingView: View {
                 Label(state, systemImage: "checkmark.circle.fill")
                     .font(.callout.weight(.medium)).foregroundStyle(.green)
             }
-            Button(jitState == nil ? "Set Up StikJIT Now" : "Change JIT Setup") { settingUpJIT = true }
+            Button(jitState == nil ? HuskL10n.render("Set Up StikJIT Now") : HuskL10n.render("Change JIT Setup")) { settingUpJIT = true }
                 .font(.body.weight(.semibold))
                 .foregroundStyle(Theme.accent)
                 .padding(.top, 4)
@@ -216,10 +209,8 @@ struct OnboardingView: View {
             Image(systemName: "checkmark.seal.fill")
                 .font(.system(size: 62))
                 .foregroundStyle(Theme.accent)
-            Text("Ready").font(.largeTitle.weight(.semibold))
-            Text("If JIT is not on when Android starts, Husk turns it on with the "
-               + "method you chose, or walks you through setting one up. You can "
-               + "change it any time in Settings › JIT & sideload.")
+            Text(HuskL10n.render("Ready")).font(.largeTitle.weight(.semibold))
+            Text(HuskL10n.render("If JIT is not on when Android starts, Husk turns it on with the method you chose, or walks you through setting one up. You can change it any time in Settings › JIT & sideload."))
                 .font(.callout).foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 34)

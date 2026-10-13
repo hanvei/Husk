@@ -167,8 +167,8 @@ private struct AppWindow: View {
             WebAppSurface(app: app)
         } else if let other = blockedBy {
             VStack(spacing: 6) {
-                Text("Another game is already loaded").font(.subheadline.weight(.semibold))
-                Text("\(other) was started in this session. Close Husk completely and open it again to run \(app.label).")
+                Text(HuskL10n.render("Another game is already loaded")).font(.subheadline.weight(.semibold))
+                Text(HuskL10n.render("\(other) was started in this session. Close Husk completely and open it again to run \(app.label)."))
                     .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
             }
             .foregroundStyle(.white)
@@ -181,10 +181,10 @@ private struct AppWindow: View {
                     if model.frames == 0 {
                         VStack(spacing: 10) {
                             if model.state == Int32(HUSK_UNITY_FAILED) || model.state == Int32(HUSK_UNITY_ENDED) {
-                                Text(model.statusText).font(.subheadline.weight(.semibold)).foregroundStyle(.white)
+                                Text(HuskL10n.text(model.statusText)).font(.subheadline.weight(.semibold)).foregroundStyle(.white)
                             } else {
                                 ProgressView().tint(.white)
-                                Text("Starting \(app.label)…").font(.caption).foregroundStyle(.white.opacity(0.7))
+                                Text(HuskL10n.render("Starting \(app.label)…")).font(.caption).foregroundStyle(.white.opacity(0.7))
                             }
                         }
                         .allowsHitTesting(false)
@@ -195,7 +195,7 @@ private struct AppWindow: View {
 
     private var titleBar: some View {
         HStack(spacing: 8) {
-            light(.red, "xmark", "Close") { windows.close() }
+            light(.red, "xmark", HuskL10n.render("Close")) { windows.close() }
             light(.yellow, "minus", "Minimise") { windows.minimize() }
             light(.green, windows.maximized ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right",
                   windows.maximized ? "Restore" : "Maximise") { windows.toggleMaximized() }
@@ -205,7 +205,7 @@ private struct AppWindow: View {
                     Image(systemName: "chevron.backward").font(.system(size: 13, weight: .semibold)).frame(width: 28, height: 28)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Back")
+                .accessibilityLabel(HuskL10n.render("Back"))
             }
             ItemIcon(item: .game(app), size: 18)
             Text(app.label).font(.footnote.weight(.semibold)).lineLimit(1)
@@ -266,7 +266,7 @@ private struct AppWindow: View {
                     }
                     .onEnded { _ in startFrame = nil }
             )
-            .accessibilityLabel("Resize")
+            .accessibilityLabel(HuskL10n.render("Resize"))
     }
 }
 
@@ -305,10 +305,10 @@ private struct WindowDock: View {
                     }
             )
             .contextMenu {
-                Button { windows.restore() } label: { Label("Show", systemImage: "macwindow") }
-                Button(role: .destructive) { windows.close() } label: { Label("Close", systemImage: "xmark") }
+                Button { windows.restore() } label: { Label(HuskL10n.render("Show"), systemImage: "macwindow") }
+                Button(role: .destructive) { windows.close() } label: { Label(HuskL10n.render("Close"), systemImage: "xmark") }
             }
-            .accessibilityLabel("\(app.label), minimised")
+            .accessibilityLabel(HuskL10n.render("\(app.label), minimised"))
             .accessibilityHint("Shows the window again")
     }
 }
@@ -345,7 +345,7 @@ final class TLWindowHost: UIView {
         addSubview(game)
     }
 
-    required init?(coder: NSCoder) { fatalError("not used") }
+    required init?(coder: NSCoder) { fatalError(HuskL10n.render("not used")) }
 
     override func layoutSubviews() {
         super.layoutSubviews()

@@ -30,23 +30,23 @@ final class CrashReport: ObservableObject {
 
         var title: String {
             switch self {
-            case .signal: return "The game crashed"
-            case .startFailed: return "The game could not start"
-            case .unknown: return "Husk closed while the game was running"
+            case .signal: return HuskL10n.render("The game crashed")
+            case .startFailed: return HuskL10n.render("The game could not start")
+            case .unknown: return HuskL10n.render("Husk closed while the game was running")
             case .diagnosed(let d): return d.title
             }
         }
         var detail: String {
             switch self {
             case .signal(let s):
-                let name = [11: "SIGSEGV, a bad memory access", 6: "SIGABRT, the game or a library gave up",
-                            4: "SIGILL, an instruction this device does not run", 8: "SIGFPE, an arithmetic error",
-                            12: "SIGSYS, a system call iOS does not allow"][s] ?? "signal \(s)"
-                return "It stopped with \(name). The report has the full log of that run."
+                let name = [11: HuskL10n.render("SIGSEGV, a bad memory access"), 6: HuskL10n.render("SIGABRT, the game or a library gave up"),
+                            4: HuskL10n.render("SIGILL, an instruction this device does not run"), 8: HuskL10n.render("SIGFPE, an arithmetic error"),
+                            12: HuskL10n.render("SIGSYS, a system call iOS does not allow")][s] ?? "signal \(s)"
+                return HuskL10n.render("It stopped with \(name). The report has the full log of that run.")
             case .startFailed:
-                return "The runtime could not start it. The report says which part was missing."
+                return HuskL10n.render("The runtime could not start it. The report says which part was missing.")
             case .unknown:
-                return "Nothing was recorded, which usually means iOS ended Husk for using too much memory, or Husk was closed from the app switcher."
+                return HuskL10n.render("Nothing was recorded, which usually means iOS ended Husk for using too much memory, or Husk was closed from the app switcher.")
             case .diagnosed(let d):
                 return d.detail
             }
@@ -182,15 +182,15 @@ struct CrashReportSheet: View {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.system(size: 30)).foregroundStyle(.orange)
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(report.cause.title).font(.title3.weight(.semibold))
+                            Text(HuskL10n.text(report.cause.title)).font(.title3.weight(.semibold))
                             Text(report.game).foregroundStyle(.secondary)
                         }
                     }
-                    Text(report.cause.detail).font(.callout)
+                    Text(HuskL10n.text(report.cause.detail)).font(.callout)
 
                     if !report.excerpt.isEmpty {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Last lines").font(.footnote.weight(.semibold)).foregroundStyle(.secondary)
+                            Text(HuskL10n.render("Last lines")).font(.footnote.weight(.semibold)).foregroundStyle(.secondary)
                             Text(report.excerpt.joined(separator: "\n"))
                                 .font(.system(size: 10.5, design: .monospaced))
                                 .textSelection(.enabled)
@@ -202,26 +202,26 @@ struct CrashReportSheet: View {
 
                     if let file {
                         ShareLink(item: file) {
-                            Label("Share Report", systemImage: "square.and.arrow.up")
+                            Label(HuskL10n.render("Share Report"), systemImage: "square.and.arrow.up")
                                 .frame(maxWidth: .infinity).padding(.vertical, 6)
                         }
                         .buttonStyle(.borderedProminent)
                     }
                     if let subject {
                         Button { reporting = subject } label: {
-                            Label("Report to the Compatibility List", systemImage: "list.bullet.clipboard")
+                            Label(HuskL10n.render("Report to the Compatibility List"), systemImage: "list.bullet.clipboard")
                                 .frame(maxWidth: .infinity).padding(.vertical, 6)
                         }
                         .buttonStyle(.bordered)
                     }
-                    Text("The report holds the full log of that run and which device and build it was on. Nothing is sent anywhere unless you share it.")
+                    Text(HuskL10n.render("The report holds the full log of that run and which device and build it was on. Nothing is sent anywhere unless you share it."))
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 .padding(20)
             }
-            .navigationTitle("Crash Report")
+            .navigationTitle(HuskL10n.render("Crash Report"))
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button(HuskL10n.render("Done")) { dismiss() } } }
         }
         .task { file = CrashReport.writeReport(report) }
         .sheet(item: $reporting) { CompatReportSheet(subject: $0) }

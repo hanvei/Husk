@@ -546,7 +546,7 @@ struct TLChecksView: View {
             progressSection
         }
         .huskForm()
-        .navigationTitle("Device Checks")
+        .navigationTitle(HuskL10n.render("Device Checks"))
     }
 
     private var checksSection: some View {
@@ -554,11 +554,11 @@ struct TLChecksView: View {
             ForEach(store.checks) { check in
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Text(check.title).foregroundStyle(Theme.text)
+                        Text(HuskL10n.text(check.title)).foregroundStyle(Theme.text)
                         Spacer(minLength: 8)
                         TLCheckTag(status: check.status)
                     }
-                    Text(check.detail)
+                    Text(HuskL10n.text(check.detail))
                         .font(.system(size: 12))
                         .foregroundStyle(Theme.textDim)
                         .fixedSize(horizontal: false, vertical: true)
@@ -574,26 +574,23 @@ struct TLChecksView: View {
             }
             .disabled(store.checking)
         } header: {
-            Text("This iPhone")
+            Text(HuskL10n.render("This iPhone"))
         } footer: {
-            Text("Android's native code expects things of the processor and of memory "
-               + "that only the phone can answer -- above all, whether a library's code "
-               + "can run with its data writable right beside it. Enable JIT first, or "
-               + "the memory checks are skipped. The results go to the console too.")
+            Text(HuskL10n.render("Android's native code expects things of the processor and of memory that only the phone can answer -- above all, whether a library's code can run with its data writable right beside it. Enable JIT first, or the memory checks are skipped. The results go to the console too."))
         }
     }
 
     private var progressSection: some View {
         Section {
             DetailRow(label: "App reports", value: "working", mono: false)
-            DetailRow(label: "Device checks", value: "working", mono: false)
+            DetailRow(label: HuskL10n.render("Device checks"), value: "working", mono: false)
             DetailRow(label: "Library loader", value: "working", mono: false)
             DetailRow(label: "Android runtime", value: "Unity, cocos2d-x, GameActivity, SDL3", mono: false)
             DetailRow(label: "Opening apps", value: "Unity, cocos2d-x, Minecraft and SDL3 games", mono: false)
         } header: {
-            Text("Where it stands")
+            Text(HuskL10n.render("Where it stands"))
         } footer: {
-            Text("The plan, in order, is docs/04-translation-layer.md in Husk's source.")
+            Text(HuskL10n.render("The plan, in order, is docs/04-translation-layer.md in Husk's source."))
         }
     }
 }
@@ -632,7 +629,7 @@ final class TLAttemptRunner: ObservableObject {
 
     var statusText: String {
         if isRunning { return "Running Attempt..." }
-        guard let code = exitCode else { return "Ready" }
+        guard let code = exitCode else { return HuskL10n.render("Ready") }
         switch code {
         case 2:  return "Success: The guest drew frames!"
         case 1:  return "Loaded: Native libraries loaded (no draw)"
@@ -657,7 +654,7 @@ final class TLAttemptRunner: ObservableObject {
         if let code = exitCode {
             return "Exit code \(code) · \(frameCount) frame(s) drawn"
         }
-        return "Not started"
+        return HuskL10n.render("Not started")
     }
 
     private var pollTicks: Int = 0
@@ -805,11 +802,11 @@ struct TLClassicAttemptView: View {
                     if !runner.isRunning, runner.frameCount == 0 {
                         VStack(spacing: 10) {
                             if runner.isDone {
-                                Text("The game stopped").font(.headline).foregroundStyle(.white)
-                                Button("Run Again") { runner.start(apks: app.apks) }.buttonStyle(.borderedProminent)
+                                Text(HuskL10n.render("The game stopped")).font(.headline).foregroundStyle(.white)
+                                Button(HuskL10n.render("Run Again")) { runner.start(apks: app.apks) }.buttonStyle(.borderedProminent)
                             } else {
                                 ProgressView().tint(.white)
-                                Text("Starting \(app.label)…").font(.subheadline).foregroundStyle(.white.opacity(0.7))
+                                Text(HuskL10n.render("Starting \(app.label)…")).font(.subheadline).foregroundStyle(.white.opacity(0.7))
                             }
                         }
                     }
@@ -823,7 +820,7 @@ struct TLClassicAttemptView: View {
             if hint {
                 VStack {
                     Spacer()
-                    Text("Tap with three fingers to show the interface")
+                    Text(HuskL10n.render("Tap with three fingers to show the interface"))
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 14).padding(.vertical, 8)
@@ -855,7 +852,7 @@ struct TLClassicAttemptView: View {
     private var bar: some View {
         HStack(spacing: 12) {
             Button { runner.stop(); dismiss() } label: {
-                Label("Close", systemImage: "xmark").font(.system(size: 13, weight: .semibold))
+                Label(HuskL10n.render("Close"), systemImage: "xmark").font(.system(size: 13, weight: .semibold))
             }
             .tint(.white)
             Circle().fill(runner.statusColor).frame(width: 7, height: 7)
@@ -864,12 +861,12 @@ struct TLClassicAttemptView: View {
             Spacer()
             if devInfo {
                 Button { withAnimation(.snappy(duration: 0.25)) { showLog.toggle() } } label: {
-                    Text(showLog ? "Hide log" : "Log").font(.system(size: 12, weight: .semibold))
+                    Text(showLog ? HuskL10n.render("Hide log") : "Log").font(.system(size: 12, weight: .semibold))
                 }
                 .tint(.white)
             }
             Button { toggleInterface() } label: {
-                Label("Hide", systemImage: "eye.slash").font(.system(size: 12, weight: .semibold))
+                Label(HuskL10n.render("Hide"), systemImage: "eye.slash").font(.system(size: 12, weight: .semibold))
             }
             .tint(.white)
         }
@@ -881,7 +878,7 @@ struct TLClassicAttemptView: View {
     private var logPanel: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                Text(runner.logText.isEmpty ? "Starting…" : runner.logText)
+                Text(runner.logText.isEmpty ? HuskL10n.render("Starting…") : runner.logText)
                     .font(.technical(10))
                     .foregroundStyle(.white.opacity(0.85))
                     .frame(maxWidth: .infinity, alignment: .leading)

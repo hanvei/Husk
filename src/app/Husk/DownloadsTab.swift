@@ -16,8 +16,8 @@ struct DownloadsTab: View {
                 Section {
                     if downloads.jobs.isEmpty {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("No downloads").font(.headline)
-                            Text("Add a link to an APK or a file, or the address a computer gives you when it shares a folder.")
+                            Text(HuskL10n.render("No downloads")).font(.headline)
+                            Text(HuskL10n.render("Add a link to an APK or a file, or the address a computer gives you when it shares a folder."))
                                 .font(.subheadline).foregroundStyle(.secondary)
                         }
                         .padding(.vertical, 6)
@@ -25,32 +25,32 @@ struct DownloadsTab: View {
                     ForEach(downloads.jobs) { job in
                         DownloadRow(job: job, speed: downloads.speed)
                             .swipeActions {
-                                Button(role: .destructive) { downloads.remove(job.id) } label: { Label("Remove", systemImage: "trash") }
+                                Button(role: .destructive) { downloads.remove(job.id) } label: { Label(HuskL10n.render("Remove"), systemImage: "trash") }
                             }
                     }
                 } header: {
                     HStack {
-                        Text("Downloads")
+                        Text(HuskL10n.render("Downloads"))
                         Spacer()
                         if downloads.jobs.contains(where: \.complete) {
-                            Button("Clear Finished") { downloads.clearFinished() }.font(.caption).textCase(nil)
+                            Button(HuskL10n.render("Clear Finished")) { downloads.clearFinished() }.font(.caption).textCase(nil)
                         }
                     }
                 } footer: {
                     VStack(alignment: .leading, spacing: 6) {
                         if downloads.liveActivitiesOff {
-                            Text("Live Activities are off for Husk, so downloads don't show on the Lock Screen or in the Dynamic Island. Turn them on in Settings › Husk › Live Activities.")
+                            Text(HuskL10n.render("Live Activities are off for Husk, so downloads don't show on the Lock Screen or in the Dynamic Island. Turn them on in Settings › Husk › Live Activities."))
                                 .foregroundStyle(.orange)
                         }
-                        if let free = Downloads.freeSpace() { Text("\(Downloads.bytes(free)) free on this device.") }
+                        if let free = Downloads.freeSpace() { Text(HuskL10n.render("\(Downloads.bytes(free)) free on this device.")) }
                     }
                 }
             }
-            .navigationTitle("Downloads")
+            .navigationTitle(HuskL10n.render("Downloads"))
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(HuskL10n.render("Done")) { dismiss() } }
                 ToolbarItem(placement: .primaryAction) {
-                    Button { adding = true } label: { Label("Add", systemImage: "plus") }
+                    Button { adding = true } label: { Label(HuskL10n.render("Add"), systemImage: "plus") }
                 }
             }
             .sheet(isPresented: $adding) { AddDownloadSheet() }
@@ -58,23 +58,23 @@ struct DownloadsTab: View {
     }
 
     @ViewBuilder private var updatesSection: some View {
-        Section("Updates") {
+        Section(HuskL10n.render("Updates")) {
             if let release = updates.available {
                 HStack {
                     Label("Husk \(release.version)", systemImage: "arrow.down.app.fill")
                     Spacer()
-                    Button("View") { UIApplication.shared.open(release.page) }.buttonStyle(.bordered)
+                    Button(HuskL10n.render("View")) { UIApplication.shared.open(release.page) }.buttonStyle(.bordered)
                 }
             }
             if guest.update.isSomething {
                 HStack {
-                    Label(guest.update.title, systemImage: "shippingbox.fill")
+                    Label(HuskL10n.text(guest.update.title), systemImage: "shippingbox.fill")
                     Spacer()
-                    Button("Download") { guest.applyUpdate() }.buttonStyle(.bordered)
+                    Button(HuskL10n.render("Download")) { guest.applyUpdate() }.buttonStyle(.bordered)
                 }
             }
             if updates.available == nil && !guest.update.isSomething {
-                Label("Everything is up to date", systemImage: "checkmark.circle").foregroundStyle(.secondary)
+                Label(HuskL10n.render("Everything is up to date"), systemImage: "checkmark.circle").foregroundStyle(.secondary)
             }
         }
     }
@@ -87,17 +87,17 @@ private struct DownloadRow: View {
     private var fraction: Double { job.total > 0 ? min(1, Double(job.received) / Double(job.total)) : 0 }
 
     private var status: String {
-        if job.complete { return job.kind == .apk ? "Added to the library" : job.kind == .folder ? "In Shared Storage" : "In Shared Storage" }
-        if job.paused { return "Paused · \(Downloads.bytes(job.received)) of \(Downloads.bytes(job.total))" }
-        if let err = job.files.first(where: { $0.error != nil })?.error { return "Stopped: \(err)" }
-        var s = "\(Downloads.bytes(job.received)) of \(Downloads.bytes(job.total))"
-        if job.files.count > 1 { s += " · \(job.filesDone)/\(job.files.count) files" }
+        if job.complete { return job.kind == .apk ? HuskL10n.render("Added to the library") : job.kind == .folder ? HuskL10n.render("In Shared Storage") : HuskL10n.render("In Shared Storage") }
+        if job.paused { return HuskL10n.render("Paused · \(Downloads.bytes(job.received)) of \(Downloads.bytes(job.total))") }
+        if let err = job.files.first(where: { $0.error != nil })?.error { return HuskL10n.render("Stopped: \(err)") }
+        var s = HuskL10n.render("\(Downloads.bytes(job.received)) of \(Downloads.bytes(job.total))")
+        if job.files.count > 1 { s += HuskL10n.render(" · \(job.filesDone)/\(job.files.count) files") }
         if speed > 1 {
             s += " · \(Downloads.bytes(Int64(speed)))/s"
             let left = Double(job.total - job.received) / speed
             if left.isFinite, left > 0 {
                 let f = DateComponentsFormatter(); f.allowedUnits = left > 3600 ? [.hour, .minute] : [.minute, .second]; f.unitsStyle = .abbreviated
-                if let t = f.string(from: left) { s += " · \(t) left" }
+                if let t = f.string(from: left) { s += HuskL10n.render(" · \(t) left") }
             }
         }
         return s
@@ -120,7 +120,7 @@ private struct DownloadRow: View {
                 }
             }
             if !job.complete { ProgressView(value: fraction) }
-            Text(status).font(.caption).foregroundStyle(job.failed ? Color.orange : Color.secondary).lineLimit(2)
+            Text(HuskL10n.text(status)).font(.caption).foregroundStyle(job.failed ? Color.orange : Color.secondary).lineLimit(2)
         }
         .padding(.vertical, 4)
     }
@@ -141,28 +141,28 @@ private struct AddDownloadSheet: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 } footer: {
-                    if let problem = downloads.problem { Text(problem).foregroundStyle(.orange) }
+                    if let problem = downloads.problem { Text(HuskL10n.text(problem)).foregroundStyle(.orange) }
                 }
                 Section {
-                    Text("An APK is added to your library when it finishes. Anything else goes into the Shared Storage folder, which games see as their phone storage.")
-                    Text("To send a whole folder from a computer on the same Wi‑Fi, run this on it and enter the address it shows:")
+                    Text(HuskL10n.render("An APK is added to your library when it finishes. Anything else goes into the Shared Storage folder, which games see as their phone storage."))
+                    Text(HuskL10n.render("To send a whole folder from a computer on the same Wi‑Fi, run this on it and enter the address it shows:"))
                     Text("python3 serve-folder.py <folder>")
                         .font(.system(.footnote, design: .monospaced))
                         .textSelection(.enabled)
-                    Text("serve-folder.py is in Husk's repository, under tools. The folder's contents land at the top of Shared Storage, so serve the folder that holds what a game expects there.")
+                    Text(HuskL10n.render("serve-folder.py is in Husk's repository, under tools. The folder's contents land at the top of Shared Storage, so serve the folder that holds what a game expects there."))
                 } header: {
-                    Text("How it works")
+                    Text(HuskL10n.render("How it works"))
                 }
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             }
-            .navigationTitle("Add Download")
+            .navigationTitle(HuskL10n.render("Add Download"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button(HuskL10n.render("Cancel")) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     if working { ProgressView() } else {
-                        Button("Download") {
+                        Button(HuskL10n.render("Download")) {
                             working = true
                             Task {
                                 await downloads.add(link: link)

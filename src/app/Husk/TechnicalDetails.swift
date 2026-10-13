@@ -53,16 +53,16 @@ struct TLTechnicalView: View {
 
     var body: some View {
         List {
-            Section("Runtime") {
-                row("Runs With", report?.runnerName ?? "Not scanned")
-                row("Package", app.packageName ?? "—", mono: true)
+            Section(HuskL10n.render("Runtime")) {
+                row(HuskL10n.render("Runs With"), report?.runnerName ?? "Not scanned")
+                row(HuskL10n.render("Package"), app.packageName ?? "—", mono: true)
                 row("Architectures", report.map { $0.abis.isEmpty ? "None (Java only)" : $0.abis.joined(separator: ", ") } ?? "—")
                 if let summary = report?.displaySummary {
                     Text(summary).font(.footnote).foregroundStyle(.secondary)
                 }
             }
 
-            Section("Package") {
+            Section(HuskL10n.render("Package")) {
                 ForEach(app.apks, id: \.self) { apk in
                     row((apk as NSString).lastPathComponent, size(of: apk), mono: true)
                 }
@@ -87,9 +87,9 @@ struct TLTechnicalView: View {
                         .padding(.vertical, 2)
                     }
                 } header: {
-                    Text("Native Libraries (\(arm64.count))")
+                    Text(HuskL10n.render("Native Libraries (\(arm64.count))"))
                 } footer: {
-                    Text("How each 64-bit library maps onto the iPhone: its relocations, the instructions Husk rewrites, and anything the loader works around.")
+                    Text(HuskL10n.render("How each 64-bit library maps onto the iPhone: its relocations, the instructions Husk rewrites, and anything the loader works around."))
                 }
             }
 
@@ -103,19 +103,19 @@ struct TLTechnicalView: View {
                             .padding(.vertical, 4)
                     }
                     .frame(maxHeight: 320)
-                    Button { sharing = true } label: { Label("Share Log", systemImage: "square.and.arrow.up") }
+                    Button { sharing = true } label: { Label(HuskL10n.render("Share Log"), systemImage: "square.and.arrow.up") }
                 } else {
                     Text(log == nil ? "Reading…" : "No log yet. It is written the first time the game runs.")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
             } header: {
-                Text("Last Run")
+                Text(HuskL10n.render("Last Run"))
             } footer: {
-                Text("The end of the log from the last time the game started. Share it when reporting a problem.")
+                Text(HuskL10n.render("The end of the log from the last time the game started. Share it when reporting a problem."))
             }
         }
         .listStyle(.insetGrouped)
-        .navigationTitle("Technical Details")
+        .navigationTitle(HuskL10n.render("Technical Details"))
         .navigationBarTitleDisplayMode(.inline)
         .task {
             let url = logURL, dir = app.dataDirectory

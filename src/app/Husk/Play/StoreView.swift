@@ -18,22 +18,22 @@ struct StoreView: View {
                 if !manager.isSignedIn {
                     signedOutState
                 } else if manager.isLoading && manager.featuredApps.isEmpty && !manager.isSearching {
-                    ProgressView("Connecting to Google Play…")
+                    ProgressView(HuskL10n.render("Connecting to Google Play…"))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     storeContent
                 }
             }
             .background(Theme.backdrop)
-            .navigationTitle("Store")
+            .navigationTitle(HuskL10n.render("Store"))
             .navigationBarTitleDisplayMode(.large)
-            .searchable(text: $searchText, prompt: "Search Google Play")
+            .searchable(text: $searchText, prompt: HuskL10n.render("Search Google Play"))
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     if manager.isSignedIn {
                         Menu {
                             if let s = manager.session {
-                                Text(s.isAnonymous ? "Guest Account (Aurora)" : s.email)
+                                Text(s.isAnonymous ? HuskL10n.render("Guest Account (Aurora)") : s.email)
                                     .font(.caption)
                                 if s.isAnonymous {
                                     Text(s.email).font(.caption2).foregroundStyle(.secondary)
@@ -43,7 +43,7 @@ struct StoreView: View {
                             Button(role: .destructive) {
                                 manager.signOut()
                             } label: {
-                                Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                                Label(HuskL10n.render("Sign Out"), systemImage: "rectangle.portrait.and.arrow.right")
                             }
                         } label: {
                             Image(systemName: manager.session?.isAnonymous == true ? "person.badge.shield.checkmark" : "person.crop.circle")
@@ -54,15 +54,15 @@ struct StoreView: View {
                             Button {
                                 Task { await manager.signInAsGuest() }
                             } label: {
-                                Label("Use Guest Account (Aurora)", systemImage: "person.crop.circle.badge.checkmark")
+                                Label(HuskL10n.render("Use Guest Account (Aurora)"), systemImage: "person.crop.circle.badge.checkmark")
                             }
                             Button {
                                 showSignIn = true
                             } label: {
-                                Label("Sign In with Google", systemImage: "person.badge.key")
+                                Label(HuskL10n.render("Sign In with Google"), systemImage: "person.badge.key")
                             }
                         } label: {
-                            Text("Sign In")
+                            Text(HuskL10n.render("Sign In"))
                                 .font(.subheadline.weight(.semibold))
                         }
                     }
@@ -83,11 +83,11 @@ struct StoreView: View {
                     }
                 } catch {}
             }
-            .alert("Error", isPresented: Binding(
+            .alert(HuskL10n.render("Error"), isPresented: Binding(
                 get: { manager.errorMessage != nil },
                 set: { if !$0 { manager.errorMessage = nil } }
             )) {
-                Button("OK", role: .cancel) { manager.errorMessage = nil }
+                Button(HuskL10n.render("OK"), role: .cancel) { manager.errorMessage = nil }
             } message: {
                 Text(manager.errorMessage ?? "")
             }
@@ -109,7 +109,7 @@ struct StoreView: View {
                     .font(.title2.weight(.bold))
                     .foregroundStyle(Theme.text)
 
-                Text("Browse and download apps using an anonymous Aurora guest account, or sign in with your Google account.")
+                Text(HuskL10n.render("Browse and download apps using an anonymous Aurora guest account, or sign in with your Google account."))
                     .font(.subheadline)
                     .foregroundStyle(Theme.textDim)
                     .multilineTextAlignment(.center)
@@ -134,7 +134,7 @@ struct StoreView: View {
                     } label: {
                         HStack(spacing: 8) {
                             Image(systemName: "person.crop.circle.badge.checkmark")
-                            Text("Use Guest Account")
+                            Text(HuskL10n.render("Use Guest Account"))
                         }
                         .font(.headline)
                         .frame(maxWidth: 240)
@@ -149,7 +149,7 @@ struct StoreView: View {
                     } label: {
                         HStack(spacing: 8) {
                             Image(systemName: "person.badge.key")
-                            Text("Sign In with Google")
+                            Text(HuskL10n.render("Sign In with Google"))
                         }
                         .font(.subheadline.weight(.medium))
                         .frame(maxWidth: 240)
@@ -180,7 +180,7 @@ struct StoreView: View {
                         }
                         .padding(.vertical, 12)
                     } else if manager.searchResults.isEmpty {
-                        Text("No apps found for \"\(debouncedSearchText)\".")
+                        Text(HuskL10n.render("No apps found for \"\(debouncedSearchText)\"."))
                             .font(.subheadline)
                             .foregroundStyle(Theme.textDim)
                             .padding(.vertical, 8)
@@ -190,7 +190,7 @@ struct StoreView: View {
                         }
                     }
                 } header: {
-                    Text("Search Results")
+                    Text(HuskL10n.render("Search Results"))
                 }
             } else {
                 if !manager.featuredApps.isEmpty {
@@ -199,11 +199,11 @@ struct StoreView: View {
                             appRow(app)
                         }
                     } header: {
-                        Text("Featured Apps")
+                        Text(HuskL10n.render("Featured Apps"))
                     }
                 } else {
                     Section {
-                        Text("No featured apps available. Try searching above.")
+                        Text(HuskL10n.render("No featured apps available. Try searching above."))
                             .font(.subheadline)
                             .foregroundStyle(Theme.textDim)
                     }
@@ -359,14 +359,14 @@ struct PlayAppDetailSheet: View {
 
                     // Metrics row
                     HStack {
-                        metricItem(title: "Rating", value: app.rating > 0 ? String(format: "%.1f ★", app.rating) : "N/A")
+                        metricItem(title: HuskL10n.render("Rating"), value: app.rating > 0 ? String(format: "%.1f ★", app.rating) : "N/A")
                         Spacer()
-                        metricItem(title: "Downloads", value: app.downloads.isEmpty ? "—" : app.downloads)
+                        metricItem(title: HuskL10n.render("Downloads"), value: app.downloads.isEmpty ? "—" : app.downloads)
                         Spacer()
-                        metricItem(title: "Version", value: app.versionString.isEmpty ? "Current" : app.versionString)
+                        metricItem(title: HuskL10n.render("Version"), value: app.versionString.isEmpty ? HuskL10n.render("Current") : app.versionString)
                         if app.sizeBytes > 0 {
                             Spacer()
-                            metricItem(title: "Size", value: ByteCountFormatter.string(fromByteCount: app.sizeBytes, countStyle: .file))
+                            metricItem(title: HuskL10n.render("Size"), value: ByteCountFormatter.string(fromByteCount: app.sizeBytes, countStyle: .file))
                         }
                     }
                     .padding(.horizontal, 8)
@@ -375,7 +375,7 @@ struct PlayAppDetailSheet: View {
                     if !app.screenshotURLs.isEmpty {
                         Divider()
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("Preview")
+                            Text(HuskL10n.render("Preview"))
                                 .font(.headline)
                                 .foregroundStyle(Theme.text)
 
@@ -401,7 +401,7 @@ struct PlayAppDetailSheet: View {
                     if !app.summary.isEmpty {
                         Divider()
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("About this app")
+                            Text(HuskL10n.render("About this app"))
                                 .font(.headline)
                                 .foregroundStyle(Theme.text)
 
@@ -418,7 +418,7 @@ struct PlayAppDetailSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") { dismiss() }
+                    Button(HuskL10n.render("Done")) { dismiss() }
                 }
             }
         }
@@ -432,7 +432,7 @@ struct PlayAppDetailSheet: View {
             if isDownloading || progress != nil {
                 HStack(spacing: 8) {
                     ProgressView()
-                    Text("Downloading…")
+                    Text(HuskL10n.render("Downloading…"))
                         .font(.caption.weight(.medium))
                         .foregroundStyle(Theme.textDim)
                 }

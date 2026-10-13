@@ -47,11 +47,11 @@ struct GoogleSignInSheet: View {
                         .font(.footnote)
                 }
             }
-            .navigationTitle("Sign in with Google")
+            .navigationTitle(HuskL10n.render("Sign in with Google"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(HuskL10n.render("Cancel")) {
                         dismiss()
                     }
                     .disabled(manager.isLoading)

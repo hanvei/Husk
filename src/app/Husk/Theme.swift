@@ -46,9 +46,9 @@ enum Theme {
 
         var title: String {
             switch self {
-            case .system: return "System"
-            case .light: return "Light"
-            case .dark: return "Dark"
+            case .system: return HuskL10n.render("System")
+            case .light: return HuskL10n.render("Light")
+            case .dark: return HuskL10n.render("Dark")
             }
         }
 
@@ -347,7 +347,7 @@ struct EmptyState: View {
             Text(title)
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(Theme.text)
-            Text(message)
+            Text(HuskL10n.text(message))
                 .font(.system(size: 14))
                 .foregroundStyle(Theme.textDim)
                 .multilineTextAlignment(.center)
@@ -387,11 +387,11 @@ struct ToastView: View {
                 .font(.system(size: 19))
                 .foregroundStyle(toast.good ? Theme.good : .orange)
             VStack(alignment: .leading, spacing: 2) {
-                Text(toast.title)
+                Text(HuskL10n.text(toast.title))
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(Theme.text)
                 if let detail = toast.detail {
-                    Text(detail)
+                    Text(HuskL10n.text(detail))
                         .font(.system(size: 12))
                         .foregroundStyle(Theme.textDim)
                         .lineLimit(2)

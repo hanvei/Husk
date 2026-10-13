@@ -1,0 +1,39 @@
+name: Localization validation
+on:
+  push:
+    branches: [localization/zh-Hans]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  localization:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check catalogs
+        run: node scripts/check_localization.cjs
+      - name: Check Apple resource syntax
+        run: find src/app -name '*.strings' -print0 | xargs -0 plutil -lint
+      - name: Compile and exercise shared Swift localization
+        run: |
+          APP="$RUNNER_TEMP/L10nCheck.app"
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+          cp -R src/app/Shared/en.lproj src/app/Shared/zh-Hans.lproj "$APP/Contents/Resources/"
+          /usr/libexec/PlistBuddy -c 'Add :CFBundleIdentifier string com.husk.localization-check' "$APP/Contents/Info.plist"
+          /usr/libexec/PlistBuddy -c 'Add :CFBundleExecutable string L10nCheck' "$APP/Contents/Info.plist"
+          /usr/libexec/PlistBuddy -c 'Add :CFBundleDevelopmentRegion string en' "$APP/Contents/Info.plist"
+          xcrun swiftc src/app/Shared/HuskL10n.swift tests/localization/main.swift -o "$APP/Contents/MacOS/L10nCheck"
+          "$APP/Contents/MacOS/L10nCheck" -AppleLanguages '(en)'
+          "$APP/Contents/MacOS/L10nCheck" -AppleLanguages '(zh-Hans)' --chinese
+          "$APP/Contents/MacOS/L10nCheck" -AppleLanguages '(fr)'
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: src/app
+        run: xcodegen generate
+      - name: Check generated localization references
+        run: |
+          grep -q 'zh-Hans' src/app/Husk.xcodeproj/project.pbxproj
+          grep -q 'HuskL10n.swift' src/app/Husk.xcodeproj/project.pbxproj
+          grep -q 'Localizable.strings' src/app/Husk.xcodeproj/project.pbxproj
+          grep -q 'InfoPlist.strings' src/app/Husk.xcodeproj/project.pbxproj

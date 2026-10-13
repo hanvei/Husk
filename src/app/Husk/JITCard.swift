@@ -44,8 +44,8 @@ struct JITCard: View {
                     .background(Color.accentColor.opacity(0.16), in: Circle())
                 Button { jit.showSetup = true } label: {
                     VStack(alignment: .leading, spacing: 1) {
-                        Text("JIT is off").font(.subheadline.weight(.semibold)).foregroundStyle(.primary)
-                        Text(jit.busy ? (jit.status ?? "Turning on JIT…") : "Games need it. \(offered == .builtIn ? "StikJIT" : offered.title) turns it on.")
+                        Text(HuskL10n.render("JIT is off")).font(.subheadline.weight(.semibold)).foregroundStyle(.primary)
+                        Text(jit.busy ? HuskL10n.text(jit.status ?? HuskL10n.render("Turning on JIT…")) : HuskL10n.render("Games need it. \(offered == .builtIn ? "StikJIT" : offered.title) turns it on."))
                             .font(.caption).foregroundStyle(.secondary).lineLimit(1)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -59,7 +59,7 @@ struct JITCard: View {
                         if offered == .builtIn, HuskBuiltInJIT.isAvailable { jit.method = .builtIn }
                         jit.enable()
                     } label: {
-                        Text("Turn On")
+                        Text(HuskL10n.render("Turn On"))
                             .font(.subheadline.weight(.bold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 14)
@@ -70,7 +70,7 @@ struct JITCard: View {
                 }
             }
             if let error = jit.error {
-                Text(error).font(.caption).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
+                Text(HuskL10n.text(error)).font(.caption).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(12)
@@ -80,24 +80,22 @@ struct JITCard: View {
     private var explanation: String {
         switch offered {
         case .trollStore:
-            return "TrollStore can turn JIT on for Husk: it opens Husk and enables it, with no computer. "
-                 + "In TrollStore's Settings, URL Scheme must be on."
+            return HuskL10n.render("TrollStore can turn JIT on for Husk: it opens Husk and enables it, with no computer. In TrollStore's Settings, URL Scheme must be on.")
         case .jailbreak:
-            return "On a jailbroken device JIT is a setting. In Dopamine, turn on Allow JIT in Apps, then open Husk again."
+            return HuskL10n.render("On a jailbroken device JIT is a setting. In Dopamine, turn on Allow JIT in Apps, then open Husk again.")
         case .stikDebug:
-            return "StikDebug is installed, so Husk will open it to turn JIT on."
+            return HuskL10n.render("StikDebug is installed, so Husk will open it to turn JIT on.")
         default:
-            return "StikJIT is built into Husk. You can turn JIT on right here — no computer and no other app. "
-                 + "Games and Android both need it."
+            return HuskL10n.render("StikJIT is built into Husk. You can turn JIT on right here — no computer and no other app. Games and Android both need it.")
         }
     }
 
     private var buttonTitle: String {
         switch offered {
-        case .trollStore: return "Turn On JIT with TrollStore"
-        case .jailbreak: return "How to Allow JIT"
-        case .stikDebug: return "Turn On JIT with StikDebug"
-        default: return HuskBuiltInJIT.isAvailable ? "Turn On JIT with StikJIT" : "Turn On JIT"
+        case .trollStore: return HuskL10n.render("Turn On JIT with TrollStore")
+        case .jailbreak: return HuskL10n.render("How to Allow JIT")
+        case .stikDebug: return HuskL10n.render("Turn On JIT with StikDebug")
+        default: return HuskBuiltInJIT.isAvailable ? HuskL10n.render("Turn On JIT with StikJIT") : HuskL10n.render("Turn On JIT")
         }
     }
 
@@ -107,8 +105,8 @@ struct JITCard: View {
                 .font(.title2)
                 .foregroundStyle(.green)
             VStack(alignment: .leading, spacing: 2) {
-                Text("JIT is on").font(.headline)
-                Text("Games and Android can run.").font(.subheadline).foregroundStyle(.secondary)
+                Text(HuskL10n.render("JIT is on")).font(.headline)
+                Text(HuskL10n.render("Games and Android can run.")).font(.subheadline).foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)
         }
@@ -125,23 +123,23 @@ struct JITCard: View {
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Text(offered == .builtIn ? "StikJIT" : offered.title).font(.title3.weight(.semibold))
-                    Text("Turn on JIT").font(.subheadline).foregroundStyle(.secondary)
+                    Text(HuskL10n.render("Turn on JIT")).font(.subheadline).foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 0)
             }
 
-            Text(explanation)
+            Text(HuskL10n.text(explanation))
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
 
             if let why = HuskBuiltInJIT.unavailableReason {
-                Text(why).font(.footnote).foregroundStyle(.orange)
+                Text(HuskL10n.text(why)).font(.footnote).foregroundStyle(.orange)
             }
 
             if jit.busy {
                 HStack(spacing: 10) {
                     ProgressView()
-                    Text(jit.status ?? "Turning on JIT…").font(.subheadline).foregroundStyle(.secondary)
+                    Text(HuskL10n.text(jit.status ?? HuskL10n.render("Turning on JIT…"))).font(.subheadline).foregroundStyle(.secondary)
                 }
             } else {
                 Button {
@@ -161,11 +159,11 @@ struct JITCard: View {
             }
 
             if let error = jit.error {
-                Text(error).font(.footnote).foregroundStyle(.orange)
+                Text(HuskL10n.text(error)).font(.footnote).foregroundStyle(.orange)
             }
 
             Button { jit.showSetup = true } label: {
-                Text("First time? See the setup, or use StikDebug or TrollStore instead")
+                Text(HuskL10n.render("First time? See the setup, or use StikDebug or TrollStore instead"))
                     .font(.footnote)
             }
         }

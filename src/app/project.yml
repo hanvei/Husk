@@ -1,5 +1,6 @@
 name: Husk
 options:
+  developmentLanguage: en
   bundleIdPrefix: com.husk
   deploymentTarget:
     # 16.0: the lowest the app builds at as written (its SwiftUI is iOS 16), so

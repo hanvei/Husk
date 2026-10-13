@@ -130,12 +130,12 @@ struct IncomingChooser: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Add to Husk").font(.title2.weight(.bold))
+                Text(HuskL10n.render("Add to Husk")).font(.title2.weight(.bold))
                 Text(title).font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
             }
 
-            choice(icon: "bolt.fill", title: "Translation Layer",
-                   detail: "Runs the game directly on your iPhone, without starting Android. Best for games.") {
+            choice(icon: "bolt.fill", title: HuskL10n.render("Translation Layer"),
+                   detail: HuskL10n.render("Runs the game directly on your iPhone, without starting Android. Best for games.")) {
                 incoming.sendToTranslationLayer()
             }
             choice(icon: "apps.iphone", title: "Android",
@@ -143,7 +143,7 @@ struct IncomingChooser: View {
                 incoming.sendToAndroid()
             }
 
-            Button("Cancel", role: .cancel) { incoming.discard() }
+            Button(HuskL10n.render("Cancel"), role: .cancel) { incoming.discard() }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 2)
         }
