@@ -26,14 +26,12 @@ jobs:
           "$APP/Contents/MacOS/L10nCheck" -AppleLanguages '(en)'
           "$APP/Contents/MacOS/L10nCheck" -AppleLanguages '(zh-Hans)' --chinese
           "$APP/Contents/MacOS/L10nCheck" -AppleLanguages '(fr)'
+      - name: Compile helper against iOS 16 SDK
+        run: xcrun --sdk iphoneos swiftc -sdk "$(xcrun --sdk iphoneos --show-sdk-path)" -target arm64-apple-ios16.0 -swift-version 5 -emit-module -parse-as-library src/app/Shared/HuskL10n.swift -o "$RUNNER_TEMP/HuskL10n.swiftmodule"
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Generate Xcode project
         working-directory: src/app
         run: xcodegen generate
-      - name: Check generated localization references
-        run: |
-          grep -q 'zh-Hans' src/app/Husk.xcodeproj/project.pbxproj
-          grep -q 'HuskL10n.swift' src/app/Husk.xcodeproj/project.pbxproj
-          grep -q 'Localizable.strings' src/app/Husk.xcodeproj/project.pbxproj
-          grep -q 'InfoPlist.strings' src/app/Husk.xcodeproj/project.pbxproj
+      - name: Check generated localization target membership
+        run: python3 tests/localization/check_project.py
