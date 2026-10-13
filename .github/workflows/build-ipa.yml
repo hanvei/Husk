@@ -1,0 +1,73 @@
+name: Build Chinese IPA
+on:
+  workflow_dispatch:
+  push:
+    branches: [localization/zh-Hans]
+    paths:
+      - '.github/workflows/build-ipa.yml'
+      - 'scripts/stage_release_runtime.sh'
+permissions:
+  contents: read
+jobs:
+  ipa:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    env:
+      DD: ${{ github.workspace }}/build/derived
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build tools
+        run: |
+          brew install xcodegen qemu
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          fi
+      - name: Configure Rust for iOS
+        run: rustup target add aarch64-apple-ios
+      - name: Verify localization
+        run: node scripts/check_localization.cjs
+      - name: Download verified official runtime dependencies
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/upstream"
+          gh release download 2.0 --repo Leviidev/Husk --pattern Husk.ipa --dir "$RUNNER_TEMP/upstream"
+          echo '55ca8a6a8a9194759be578ef340553372a4427257093c659d5dc3b2971d722e7  Husk.ipa' > "$RUNNER_TEMP/upstream/SHA256SUMS"
+          (cd "$RUNNER_TEMP/upstream" && shasum -a 256 -c SHA256SUMS)
+          unzip -q "$RUNNER_TEMP/upstream/Husk.ipa" -d "$RUNNER_TEMP/upstream/unpacked"
+          bash scripts/stage_release_runtime.sh "$RUNNER_TEMP/upstream/unpacked/Payload/Husk.app"
+      - name: Build pairing library
+        run: bash scripts/build_rppairing_ios.sh
+      - name: Build app and package IPA
+        run: bash scripts/package_ipa.sh "$GITHUB_WORKSPACE/build/Husk-zh-Hans.ipa"
+      - name: Verify packaged Chinese resources
+        run: |
+          python3 - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('build/Husk-zh-Hans.ipa') as package:
+              names = set(package.namelist())
+              for target in ['Payload/Husk.app/', 'Payload/Husk.app/PlugIns/HuskDownloadsWidget.appex/']:
+                  for language in ['en', 'zh-Hans']:
+                      assert target + language + '.lproj/Localizable.strings' in names, (target, language)
+              assert 'Payload/Husk.app/zh-Hans.lproj/InfoPlist.strings' in names
+          print('PASS: packaged app and widget contain English and Simplified Chinese resources')
+          PY
+          shasum -a 256 build/Husk-zh-Hans.ipa > build/Husk-zh-Hans.ipa.sha256
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Husk-zh-Hans-ipa
+          path: |
+            build/Husk-zh-Hans.ipa
+            build/Husk-zh-Hans.ipa.sha256
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Husk-zh-Hans-build-log
+          path: build/derived/build.log
+          if-no-files-found: ignore
+          retention-days: 7
